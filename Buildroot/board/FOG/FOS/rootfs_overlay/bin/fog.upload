@@ -57,7 +57,7 @@ beginUpload() {
             dots "Getting Windows/Linux Partition Count"
             countPartTypes "$hd" "ntfs" "ntfscnt"
             countPartTypes "$hd" "extfs" "extfscnt"
-	    local partscnt=${#parts[@]}
+	    countPartTypes= "$hd" "*" "partscnt"
             if [[ $ntfscnt -eq 0 && $extfscnt -eq 0 ]]; then
                 echo "Failed"
                 debugPause
