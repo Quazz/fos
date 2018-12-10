@@ -57,6 +57,7 @@ beginUpload() {
             dots "Getting Windows/Linux Partition Count"
             countPartTypes "$hd" "ntfs" "ntfscnt"
             countPartTypes "$hd" "extfs" "extfscnt"
+	    local partscnt=${#parts[@]}
             if [[ $ntfscnt -eq 0 && $extfscnt -eq 0 ]]; then
                 echo "Failed"
                 debugPause
@@ -67,6 +68,8 @@ beginUpload() {
             echo " * NTFS Partition count of: $ntfscnt"
             debugPause
             echo " * EXTFS Partition count of: $extfscnt"
+            debugPause
+	    echo " * Total Partition count of: $partscnt"
             debugPause
             case $osid in
                 [4-7]|9|50|51)
@@ -103,10 +106,12 @@ beginUpload() {
                                 ;;
                         esac
                         umount /bcdstore >/dev/null 2>&1
-                        if [[ $(parted -l "$hd" | grep boot | awk '{print $1}') -eq $part_number || $(parted -l "$hd" | grep msftres | awk '{print $1}') -eq $part_number || $(parted -l "$hd" | grep hidden | awk '{print $1}') -eq $part_number ]]; then
-                                echo " * New fixed partition for ($part) added."
-                                fixed_size_partitions="$fixed_size_partitions:$part_number"
-                        fi
+			if [[ $partscnt -gt 1 ]] then;			
+                        	if [[ $(parted -l "$hd" | grep boot | awk '{print $1}') -eq $part_number || $(parted -l "$hd" | grep msftres | awk '{print $1}') -eq $part_number || $(parted -l "$hd" | grep hidden | awk '{print $1}') -eq $part_number ]]; then
+                                	echo " * New fixed partition for ($part) added."
+                                	fixed_size_partitions="$fixed_size_partitions:$part_number"
+                        	fi
+			fi
                     done
                     ;;
             esac
