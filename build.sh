@@ -112,14 +112,14 @@ while getopts "$optspec" o; do
 done
 brURL="https://buildroot.org/downloads/buildroot-$BUILDROOT_VERSION.tar.bz2"
 kernelURL="https://www.kernel.org/pub/linux/kernel/v4.x/linux-$KERNEL_VERSION.tar.xz"
-deps="git meld build-essential rsync libncurses5-dev bison flex gcc-arm-linux-gnueabi gcc-aarch64-linux-gnu"
+deps="git meld rsync ncurses-devel bison flex gcc-arm-linux-gnu gcc-aarch64-linux-gnu"
 [[ -z $arch ]] && arch="x64 x86 arm arm64"
 [[ -z $buildPath ]] && buildPath=$(dirname $(readlink -f $0))
 [[ -z $confirm ]] && confirm="y"
 echo "Checking packages needed for building"
 for pkg in $deps
 do
-    dpkg -s $pkg >/dev/null 2>&1
+    rpm -qi $pkg >/dev/null 2>&1
     if [[ $? != 0 ]]; then
         echo " * Package $pkg missing!"
         fail=1
