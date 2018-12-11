@@ -483,6 +483,31 @@ shrinkPartition() {
     local part_block_size=0
     case $fstype in
         ntfs)
+            dots "Mounting partition ($part)"
+                        if [[ ! -d /bcdstore ]]; then
+                            mkdir -p /bcdstore >/dev/null 2>&1
+                            case $? in
+                                0)
+                                    ;;
+                                *)
+                                    echo "Failed"
+                                    debugPause
+                                    handleError " * Could not create mount location ($0->${FUNCNAME[0]})\n    Args Passed: $*"
+                                    ;;
+                            esac
+                        fi
+                        ntfs-3g -o remove_hiberfile,rw $part /bcdstore >/tmp/ntfs-mount-output 2>&1
+                        case $? in
+                            0)
+                                echo "Done"
+                                debugPause
+                                ;;
+                            *)
+                                echo "Failed"
+                                debugPause
+                                handleError " * Could not mount $part ($0->${FUNCNAME[0]})\n    Args Passed: $*\n    Reason: $(cat /tmp/ntfs-mount-output | tr -d \\0)"
+                                ;;
+                        esac
             if [[ -n `find /bcdstore -type d -maxdepth 1 -iname Recovery` ]]; then
                 echo "$(cat "$imagePath/d1.fixed_size_partitions" | tr -d \\0):${part_number}" > "$imagePath/d1.fixed_size_partitions"
                 echo " * Not shrinking ($part) recovery partition"
@@ -495,6 +520,7 @@ shrinkPartition() {
                 debugPause
                 return
             fi
+            umount /bcdstore >/dev/null 2>&1
             ntfsresize -fivP $part >/tmp/tmpoutput.txt 2>&1
             if [[ ! $? -eq 0 ]]; then
                 echo " * Not shrinking ($part) trying fixed size"
