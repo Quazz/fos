@@ -105,13 +105,13 @@ beginUpload() {
                                 handleError " * Could not mount $part ($0->${FUNCNAME[0]})\n    Args Passed: $*\n    Reason: $(cat /tmp/ntfs-mount-output | tr -d \\0)"
                                 ;;
                         esac
-                        umount /bcdstore >/dev/null 2>&1
                         if [[ $partscnt -gt 1 ]]; then			
-                                if [[ $(parted -l "$hd" | grep boot | awk '{print $1}') -eq $part_number || $(parted -l "$hd" | grep msftres | awk '{print $1}') -eq $part_number || $(parted -l "$hd" | grep hidden | awk '{print $1}') -eq $part_number ]]; then
+                                if [[ -n `find /bcdstore -type d -maxdepth 1 -iname Boot`  ||  -n `find /bcdstore -type d -maxdepth 1 -iname Recovery` ]]; then
                                         echo " * New fixed partition for ($part) added."
                                         fixed_size_partitions="$fixed_size_partitions:$part_number"
                                 fi
                         fi
+                        umount /bcdstore >/dev/null 2>&1
                     done
                     ;;
             esac
