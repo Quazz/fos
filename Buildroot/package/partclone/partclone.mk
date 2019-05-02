@@ -5,7 +5,7 @@
 ################################################################################
 
 PARTCLONE_VERSION = 0.3.12
-PARTCLONE_SOURCE = partclone_$(PARTCLONE_VERSION).tar.gz
+PARTCLONE_SOURCE = partclone-$(PARTCLONE_VERSION).tar.gz
 PARTCLONE_SITE = http://partclone.nchc.org.tw/download/testing
 PARTCLONE_INSTALL_STAGING = YES
 PARTCLONE_AUTORECONF = YES
